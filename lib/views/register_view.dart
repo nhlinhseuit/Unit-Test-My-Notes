@@ -31,62 +31,59 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
-        ),
-      body: FutureBuilder (
-        future: Firebase.initializeApp (
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) { 
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              return Column(
-                children: [
-                  TextField(
-                    controller: _email,
-                    keyboardType: TextInputType.emailAddress,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your email'
-                    ),
-                  ),
-                  TextField(
-                    controller: _password,
-                    obscureText: true,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your password'
-                    ),
-                  ),
-                  TextButton(onPressed: () async {
-                    final emailText = _email.text;
-                    final passwordText = _password.text;
-                    try {
-                      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                        email: emailText, 
-                        password: passwordText
-                      );
-                    } on FirebaseAuthException catch(e) {
-                      if (e.code == 'weak-password') {
-                        print('Babe, your password is quite weak.');
-                      } else if (e.code == 'email-already-in-use') {
-                        print('Babe, your email is already in use.');
-                      } else if (e.code == 'invalid-email') {
-                        print('Babe, your email is invalid.');
-                      } else {
-                        print(e.code);
-                      }
-                    }
-                  }, child: const Text('Register'),),
-                ],
+        title: const Text('Resgister'),
+      ),
+      body: Column(
+        children: [
+          TextField(
+            controller: _email,
+            keyboardType: TextInputType.emailAddress,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(
+              hintText: 'Enter your email'
+            ),
+          ),
+          TextField(
+            controller: _password,
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(
+              hintText: 'Enter your password'
+            ),
+          ),
+          TextButton(onPressed: () async {
+            final emailText = _email.text;
+            final passwordText = _password.text;
+            try {
+              final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                email: emailText, 
+                password: passwordText
               );
-              default:
-              return const Text('Loading...');
+            } on FirebaseAuthException catch(e) {
+              if (e.code == 'weak-password') {
+                // print('Babe, your password is quite weak.');
+              } else if (e.code == 'email-already-in-use') {
+                // print('Babe, your email is already in use.');
+              } else if (e.code == 'invalid-email') {
+                // print('Babe, your email is invalid.');
+              } else {
+                // print(e.code);
+              }
             }
-          },
-        ),
+          }, child: const Text('Register'),),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/login/', 
+                (route) => false
+              );
+            }, 
+            child: const Text('Alreagy have an account? Login here!')
+          )
+        ],
+      ),
     );
   }
 }
