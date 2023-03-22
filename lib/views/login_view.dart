@@ -1,7 +1,6 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mynotes/views/register_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -60,15 +59,14 @@ late final TextEditingController _email;
                 email: emailText, 
                 password: passwordText
               );
-              print(userCredential);
             }
             on FirebaseAuthException catch(e) {
               if (e.code == 'user-not-found') {
-                print('This email has not been registered.');
+                print('User not found.');
               } else if (e.code == 'wrong-password') {
-                print('Babe, your password is wrong.');
-              } else {
-                print(e.code);
+                print('Wrong password.');
+               } else {
+                
               }
             }
           }, child: const Text('Log in'),),
