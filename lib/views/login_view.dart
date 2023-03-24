@@ -1,6 +1,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as devtools show log;
+import 'package:mynotes/constants/routes.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -54,26 +56,36 @@ late final TextEditingController _email;
           TextButton(onPressed: () async {
             final emailText = _email.text;
             final passwordText = _password.text;
+            
             try {
-              final userCredential = await  FirebaseAuth.instance.signInWithEmailAndPassword(
+              await  FirebaseAuth.instance.signInWithEmailAndPassword(
                 email: emailText, 
                 password: passwordText
               );
+              final user = FirebaseAuth.instance.currentUser;
+              if (user != null) {
+                final emailVerified = user.emailVerified;
+                if (emailVerified) {              
+                  Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                } else {              
+                  Navigator.of(context).pushNamedAndRemoveUntil(verifyRoute, (route) => false);
+                }
+              }         
             }
             on FirebaseAuthException catch(e) {
               if (e.code == 'user-not-found') {
-                print('User not found.');
+                devtools.log('User not found.');
               } else if (e.code == 'wrong-password') {
-                print('Wrong password.');
-               } else {
-                
+                devtools.log('Wrong password.');
+              } else {
+                devtools.log(e.code);
               }
             }
           }, child: const Text('Log in'),),
           TextButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                '/register/', 
+                registerRoute, 
                 (route) => false
               );
             }, 
