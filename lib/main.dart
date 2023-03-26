@@ -42,23 +42,25 @@ class HomePage extends StatelessWidget {
     return FutureBuilder (
       future: Firebase.initializeApp (
         options: DefaultFirebaseOptions.currentPlatform,
-    ),
-    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) { 
-      switch (snapshot.connectionState) {
-        case ConnectionState.done:
-          final user = FirebaseAuth.instance.currentUser;
-          if (user != null) {
-            final emailVerified = user.emailVerified;
-            if (emailVerified) {
-              return const NotesView();
+      ),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) { 
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            final user = FirebaseAuth.instance.currentUser;
+            if (user != null) {
+              final emailVerified = user.emailVerified;
+              if (emailVerified) {
+                return const NotesView();
+              } else {
+                return const VerifyEmailView();
+              }
             } else {
-              return const VerifyEmailView();
+              return const LoginView();
             }
-          } else {
-            return const LoginView();
-          }
-        default:
-          return const CircularProgressIndicator();
+          default:
+            return const Scaffold(
+              body: CircularProgressIndicator(),
+            );
         }
       },
     );
