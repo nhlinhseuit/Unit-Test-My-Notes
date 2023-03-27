@@ -1,7 +1,7 @@
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 
 import '../uitilities/show_error_dialog.dart';
 
@@ -59,29 +59,26 @@ late final TextEditingController _email;
             final passwordText = _password.text;
             
             try {
-              await  FirebaseAuth.instance.signInWithEmailAndPassword(
+              await AuthService.firebase().login(
                 email: emailText, 
                 password: passwordText
               );
-              final user = FirebaseAuth.instance.currentUser;
+              final user = AuthService.firebase().currentUser;
               if (user != null) {
-                final emailVerified = user.emailVerified;
+                final emailVerified = user.isEmailVerified;
                 if (emailVerified) {              
                   Navigator.of(context).pushNamedAndRemoveUntil(notesRoute, (route) => false);
                 } else {              
                   Navigator.of(context).pushNamedAndRemoveUntil(verifyRoute, (route) => false);
                 }
               }         
+            } on UserNotFoundAuthException {
+              await showErrorDialog(context, 'Babe, who even are you?');
+            } on WrongPasswordAuthException {
+              await showErrorDialog(context, 'Babe, wrong password.');
+            } on GenericAuthException {
+              await showErrorDialog(context, 'Authentication Error.');
             }
-            on FirebaseAuthException catch(e) {
-              if (e.code == 'user-not-found') {
-                await showErrorDialog(context, 'Babe, who even are you?');
-              } else if (e.code == 'wrong-password') {
-                await showErrorDialog(context, 'Babe, wrong password.');
-              } else {
-                await showErrorDialog(context, 'Error: ${e.code}');
-              }
-            } 
             catch (e) {
               await showErrorDialog(context, 'Error: ${e.toString()}');
             }
