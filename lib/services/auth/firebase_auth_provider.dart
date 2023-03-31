@@ -91,5 +91,4 @@ class FirebaseAuthProvider implements AuthProvider {
         options: DefaultFirebaseOptions.currentPlatform,
       );
   }
-
 }
